@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/CC-Authentication-Micro-Service.iml" filepath="$PROJECT_DIR$/CC-Authentication-Micro-Service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CC-Educational-Micro-Service.iml" filepath="$PROJECT_DIR$/CC-Educational-Micro-Service.iml" />
     </modules>
   </component>
 </project>
