@@ -27,6 +27,7 @@ public class SessionController {
             ,@RequestParam("session") String session, HttpServletResponse response){
 
         try {
+
             String raw=CryptoHelper.decrypt(session);
             JSONObject object= (JSONObject) new JSONParser().parse(raw);
             Session s=Session.getModel(object);
@@ -34,7 +35,7 @@ public class SessionController {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 return ResponseFactory.getErrorResponse(HttpStatus.UNAUTHORIZED.value()
                 ,"invalid session"
-                ,"user identif  ier {"+studentNumber+"} is not matches with session"
+                ,"user identifier {"+studentNumber+"} is not matches with session"
                 ,"/authenticate");
             }else {
                 Session savedSession=sessionService.getSessionBySS(s.getSessionString());

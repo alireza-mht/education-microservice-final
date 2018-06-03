@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class UserAuthentication {
 
     public static void main(String[] args){
-        int a =10;
         SpringApplication.run(UserAuthentication.class, args);
     }
 
