@@ -1,8 +1,11 @@
 package io.github.alirezamht.educational.controller;
 
 import com.sun.javafx.util.Logging;
+import io.github.alirezamht.educational.model.Course;
+import io.github.alirezamht.educational.service.CourseService;
 import io.github.alirezamht.educational.util.ResponseFactory;
 import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -16,18 +19,23 @@ import java.util.logging.Logger;
 public class CourseController {
     protected RestTemplate restTemplate = new RestTemplate();
 
+    @Autowired
+    private CourseService courseService;
+
     @GetMapping(value ="show" , params = {"studentNumber" , "session" , "id"  } )
     public @ResponseBody JSONObject showCourse(@RequestParam("studentNumber") String studentNumber
-            , @RequestParam("session") String session , HttpServletResponse response) {
-
+            , @RequestParam("session") String session , @RequestParam("id") String id
+            , HttpServletResponse response) {
         try {
             //based on authentication port (8080) authenticate the sessions
            String url = "http://localhost:8080/authenticate?" +"studentNumber="+studentNumber+"&session="+session;
            JSONObject authenticate  = restTemplate.getForObject(url,JSONObject.class);
            if(200 == (Integer) authenticate.get("status")){
                response.setStatus(HttpStatus.OK.value());
-               JSONObject result = new JSONObject();
-
+               //Long a = courseService.getCountCourses();
+               JSONObject result = courseService.getCourseById(Long.valueOf(id).longValue()).getJson();
+               return ResponseFactory.getSuccessResponse(HttpStatus.OK.value()
+                       ,result);
            }
             return null;
         }catch (Exception e){

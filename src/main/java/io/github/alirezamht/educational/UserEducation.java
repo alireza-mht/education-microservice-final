@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 @SpringBootApplication
 
-public class UserAuthentication {
+public class UserEducation {
 
     public static void main(String[] args){
-        SpringApplication.run(UserAuthentication.class, args);
+        SpringApplication.run(UserEducation.class, args);
     }
 
     @GetMapping("/")

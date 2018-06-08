@@ -4,7 +4,9 @@ import io.github.alirezamht.educational.model.Course;
 
 public interface CourseService {
 
-    Course getCourseById(String id);
+    Course getCourseById(Long id);
+
+    //Long getCountCourses();
 
     void update(Course course);
 }

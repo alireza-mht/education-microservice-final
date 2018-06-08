@@ -2,6 +2,8 @@ package io.github.alirezamht.educational.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "students")
@@ -33,6 +35,14 @@ public class Student implements Serializable {
     private String studentNumber;
     @Column(nullable = false)
     private String password;
+
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(
+            name = "studentParticipation",
+            joinColumns ={ @JoinColumn(name = "studentNum")},
+            inverseJoinColumns = {@JoinColumn(name = "courseNum")}
+    )
+    private Set<Course> courseSet = new HashSet<>();
 
     public Student(Long id, String firstName, String lastName, String persianFirstName, String persianLastName, int type, String phoneNumber, int field, String fieldName, String persianFieldName, String nationalNumber, String studentNumber,String password) {
         this(firstName, lastName, persianFirstName, persianLastName, type, phoneNumber, field, fieldName, persianFieldName, nationalNumber, studentNumber,password);
@@ -158,6 +168,7 @@ public class Student implements Serializable {
         this.password = password;
     }
 
+
     @Override
     public String toString() {
         return "Student{" +
@@ -175,4 +186,19 @@ public class Student implements Serializable {
                 ", studentNumber='" + studentNumber + '\'' +
                 '}';
     }
+
+    public boolean addCourseToStudent(Course course){
+        if (!courseSet.contains(course)) {
+            this.courseSet.remove(course);
+            return true;
+        }else return false;
+    }
+
+    public boolean removeCourseToStudent(Course course){
+        if (courseSet.contains(course)) {
+            this.courseSet.remove(course);
+            return true;
+        }else return false;
+    }
+
 }
