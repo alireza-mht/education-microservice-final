@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/student")
@@ -26,32 +25,32 @@ public class StudentController {
     private CourseService courseService;
 
 
+
     @GetMapping(value = "selectCourse" , params = {"studentNumber","session","id"})
     public @ResponseBody
     JSONObject selectCourse (@RequestParam("studentNumber") String studentNumber,@RequestParam("session") String session,
                              @RequestParam("id") String id , HttpServletResponse response){
         try {
+
             //based on authentication port (8080) authenticate the sessions
-            String url = "http://localhost:8081/authenticate?" +"studentNumber="+studentNumber+"&session="+session;
+            String url = "http://172.17.0.3:8080/authenticate?" +"studentNumber="+studentNumber+"&session="+session;
             JSONObject authenticate  = restTemplate.getForObject(url,JSONObject.class);
             if(200 == (Integer) authenticate.get("status")){
                 Course course =courseService.getCourseById(Long.valueOf(id).longValue());
                 Student student = studentService.getStudentByStdNo(studentNumber);
                 if(course.getCapacity()>0 ){
-                    if (course.addStudentToCourse(student) && student.addCourseToStudent(course)) {
+                    if ( student.addCourseToStudent(course)) {
                         course.setCapacity(course.getCapacity() - 1);
-
                         courseService.update(course);
                         response.setStatus(HttpStatus.OK.value());
-                        //Long a = courseService.getCountCourses();
-                        // JSONObject result = courseService.getCourseById(Long.valueOf(id).longValue()).getJson();
                         JSONObject result = new JSONObject();
                         result.put("message", "course added to list successfully");
                         return ResponseFactory.getSuccessResponse(HttpStatus.OK.value()
                                 , result);
+
                     }else{
                         JSONObject result = new JSONObject();
-                        result.put("message","error.the course has been added to unites");
+                        result.put("message","error.the course has been added to unites list of this student");
                         return ResponseFactory.getSuccessResponse(HttpStatus.BAD_REQUEST.value()
                                 , result);
                     }
@@ -84,31 +83,35 @@ public class StudentController {
                              @RequestParam("id") String id , HttpServletResponse response){
         try {
             //based on authentication port (8080) authenticate the sessions
-            String url = "http://localhost:8081/authenticate?" +"studentNumber="+studentNumber+"&session="+session;
+            String url = "http://172.17.0.3:8080/authenticate?" +"studentNumber="+studentNumber+"&session="+session;
             JSONObject authenticate  = restTemplate.getForObject(url,JSONObject.class);
             if(200 == (Integer) authenticate.get("status")){
                 Course course =courseService.getCourseById(Long.valueOf(id).longValue());
                 Student student = studentService.getStudentByStdNo(studentNumber);
-                    if( course.removeStudentToCourse(student) && student.removeCourseToStudent(course) ) {
-                        course.setCapacity(course.getCapacity() + 1);
-                        courseService.update(course);
-                        response.setStatus(HttpStatus.OK.value());
-                        //Long a = courseService.getCountCourses();
-                        // JSONObject result = courseService.getCourseById(Long.valueOf(id).longValue()).getJson();
-                        JSONObject result = new JSONObject();
-                        result.put("message", "course removed from list successfully");
-                        return ResponseFactory.getSuccessResponse(HttpStatus.OK.value()
-                                , result);
-                    }else{
+                if( student.removeCourseFromStudent(course) ) {
+                    course.setCapacity(course.getCapacity() + 1);
+                    courseService.update(course);
+                    response.setStatus(HttpStatus.OK.value());
+                   JSONObject result = new JSONObject();
+                    result.put("message", "course removed from list successfully");
+                    return ResponseFactory.getSuccessResponse(HttpStatus.OK.value()
+                            , result);
+                }else{
                     JSONObject result = new JSONObject();
-                    result.put("message","error.No course with the specefic id");
+                    result.put("message","error.No course with the specefic id for this student");
                     return ResponseFactory.getSuccessResponse(HttpStatus.NOT_FOUND.value()
                             , result);
                 }
             }
             return null;
         }catch (Exception e){
-            if(e.toString().equals("org.springframework.web.client.HttpClientErrorException: 401 null")) {
+            if (e.getMessage().equals("500 null")){
+                response.setStatus(HttpStatus.NOT_FOUND.value());
+                return ResponseFactory.getErrorResponse(HttpStatus.NOT_FOUND.value()
+                        ,"session not found"
+                        ,"user session is not valid!need login to access."
+                        ,"/authenticate");
+            }else if(e.getMessage().equals("401 null")) {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 return ResponseFactory.getErrorResponse(HttpStatus.UNAUTHORIZED.value()
                         ,"session expired"

@@ -6,7 +6,5 @@ public interface CourseService {
 
     Course getCourseById(Long id);
 
-    //Long getCountCourses();
-
     void update(Course course);
 }

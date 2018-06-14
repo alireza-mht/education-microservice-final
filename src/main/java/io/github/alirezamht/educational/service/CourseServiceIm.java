@@ -20,13 +20,6 @@ public class CourseServiceIm implements CourseService {
         return courseRepository.getCoursesByiD(id);
     }
 
-
-//    @Override
-//    public Long getCountCourses() {
-//        return courseRepository.count();
-//    }
-
-
     @Override
     public void update(Course course) {
 

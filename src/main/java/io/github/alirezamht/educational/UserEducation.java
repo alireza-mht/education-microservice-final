@@ -12,6 +12,8 @@ public class UserEducation {
 
     public static void main(String[] args){
         SpringApplication.run(UserEducation.class, args);
+
+
     }
 
     @GetMapping("/")

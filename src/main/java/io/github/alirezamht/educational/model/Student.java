@@ -2,7 +2,9 @@ package io.github.alirezamht.educational.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -36,13 +38,20 @@ public class Student implements Serializable {
     @Column(nullable = false)
     private String password;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
+
+
+    @ManyToMany(cascade = {CascadeType.ALL},targetEntity = Course.class,fetch = FetchType.LAZY)
     @JoinTable(
-            name = "studentParticipation",
-            joinColumns ={ @JoinColumn(name = "studentNum")},
-            inverseJoinColumns = {@JoinColumn(name = "courseNum")}
+            name = "stu_par",
+            joinColumns ={ @JoinColumn(name = "student_id")},
+            inverseJoinColumns = {@JoinColumn(name = "course_id")}
     )
-    private Set<Course> courseSet = new HashSet<>();
+    private List<Course> courses = new ArrayList<>();
+
+
+    public List<Course> getCourseSet() {
+        return courses;
+    }
 
     public Student(Long id, String firstName, String lastName, String persianFirstName, String persianLastName, int type, String phoneNumber, int field, String fieldName, String persianFieldName, String nationalNumber, String studentNumber,String password) {
         this(firstName, lastName, persianFirstName, persianLastName, type, phoneNumber, field, fieldName, persianFieldName, nationalNumber, studentNumber,password);
@@ -72,102 +81,6 @@ public class Student implements Serializable {
         return id;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getPersianFirstName() {
-        return persianFirstName;
-    }
-
-    public void setPersianFirstName(String persianFirstName) {
-        this.persianFirstName = persianFirstName;
-    }
-
-    public String getPersianLastName() {
-        return persianLastName;
-    }
-
-    public void setPersianLastName(String persianLastName) {
-        this.persianLastName = persianLastName;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public int getField() {
-        return field;
-    }
-
-    public void setField(int field) {
-        this.field = field;
-    }
-
-    public String getFieldName() {
-        return fieldName;
-    }
-
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
-    }
-
-    public String getPersianFieldName() {
-        return persianFieldName;
-    }
-
-    public void setPersianFieldName(String persianFieldName) {
-        this.persianFieldName = persianFieldName;
-    }
-
-    public String getNationalNumber() {
-        return nationalNumber;
-    }
-
-    public void setNationalNumber(String nationalNumber) {
-        this.nationalNumber = nationalNumber;
-    }
-
-    public String getStudentNumber() {
-        return studentNumber;
-    }
-
-    public void setStudentNumber(String studentNumber) {
-        this.studentNumber = studentNumber;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
 
     @Override
     public String toString() {
@@ -188,15 +101,17 @@ public class Student implements Serializable {
     }
 
     public boolean addCourseToStudent(Course course){
-        if (!courseSet.contains(course)) {
-            this.courseSet.remove(course);
+        if (!course.getStudentSet().contains(this)) {
+            this.getCourseSet().add(course);
+            course.getStudentSet().add(this);
             return true;
         }else return false;
     }
 
-    public boolean removeCourseToStudent(Course course){
-        if (courseSet.contains(course)) {
-            this.courseSet.remove(course);
+    public boolean removeCourseFromStudent(Course course){
+        if (course.getStudentSet().contains(this)) {
+            this.getCourseSet().remove(course);
+            course.getStudentSet().remove(this);
             return true;
         }else return false;
     }
