@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
     <developers>
         <developer>
-            <name>Mehdi Akbarian Rastaghi</name>
-            <email>Mehdi74Akbarian@gmail.com</email>
+            <name>Alireza Mohtadi</name>
+            <email>alireza.mohtadi2009@gmail.com</email>
         </developer>
     </developers>
 
-    <groupId>io.github.makbn</groupId>
-    <artifactId>CC-Authentication-Micro-Service</artifactId>
+    <groupId>io.github.alireza-mht</groupId>
+    <artifactId>CC-Educational-Micro-Service</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <parent>
